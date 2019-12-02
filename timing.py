@@ -1,19 +1,25 @@
 import timeit
 import os
 
-days = range(1, len(os.listdir('inputs/')) + 1)
-runs = 1
-
-# for single run
-days = [1]
 
 def setupstring(day):
-    return """
-from day{0} import main
-day = {0}""".format(day)
+    return f"""
+from day{day} import main"""
 
 
-for day in days:
+def time_day(day, runs=1):
     print("-----## Assignment day {0} ##-----".format(day))
-    print("Time used for assignment {0}: {1}s\n\n".format(day, timeit.timeit("main(day)", setup=setupstring(day),
-                                                                             number=runs) / runs))
+    time = timeit.timeit(f"main({day})", setup=setupstring(day), number=runs) / runs
+    print(f"Time used for assignment {day}: {time}s\n\n")
+
+
+def main():
+    days = range(1, len(os.listdir('inputs/')) + 1)
+    runs = 1
+
+    for day in days:
+        time_day(day, runs)
+
+
+if __name__ == '__main__':
+    main()
