@@ -3,11 +3,8 @@ from day3 import get_wirecoords, closest_intersection
 
 
 class MyTestCase(unittest.TestCase):
-    def test_wirecoords(self):
-        self.assertEqual(get_wirecoords('R2,U1,L3,D2')[0], {1+0j, 2+0j, 2+1j, 1+1j, 0+1j, -1+1j, -1+0j, -1-1j})
-
     def test_distances(self):
-        self.assertEqual(get_wirecoords('R2,U1,L3,D2')[1],
+        self.assertEqual(get_wirecoords('R2,U1,L3,D2'),
                          {1+0j: 1, 2+0j: 2, 2+1j: 3, 1+1j: 4, 0+1j: 5, -1+1j: 6, -1+0j: 7, -1-1j: 8})
 
     def test_intersection_1(self):
