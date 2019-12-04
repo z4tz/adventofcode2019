@@ -14,6 +14,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(extra_valid_password([1, 2, 3, 4, 4, 4]), False)
         self.assertEqual(extra_valid_password([1, 1, 1, 1, 2, 2]), True)
         self.assertEqual(extra_valid_password([1, 1, 1, 2, 4, 5]), False)
+        self.assertEqual(extra_valid_password([1, 1, 1, 1, 2, 3]), False)
 
 
 

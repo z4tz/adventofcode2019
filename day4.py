@@ -1,5 +1,6 @@
 from inputreader import aocinput
 from typing import List
+from collections import Counter
 
 
 def valid_password(password: List[int]) -> bool:
@@ -9,30 +10,14 @@ def valid_password(password: List[int]) -> bool:
     return bool(sum([password[i] == password[i+1] for i in range(len(password) - 1)]))
 
 
-def digitcount(digits: List[int]) -> int:
-    return len(set(digits))
-
-
 def extra_valid_password(password: List[int]) -> bool:
+    numberPairs = Counter()  # count how many pairs of each number is found, if only 1 its not part of larger group
     for i in range(len(password)-1):
         if password[i] > password[i+1]:
             return False
-
         if password[i] == password[i+1]:
-            if i == 0:
-                group = password[i:i+3]
-            elif i == len(password) - 2:
-                group = password[i-1:i+2]
-            else:
-                group = password[i-1:i+3]
-
-            if digitcount(group) > 1:
-                print(password, group, digitcount(group))
-                return True
-    return False
-
-
-
+            numberPairs[password[i]] += 1
+    return 1 in numberPairs.values()
 
 
 def password_count(data: str) -> int:
