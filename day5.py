@@ -3,11 +3,15 @@ from typing import List
 
 
 class TEST:
-    def __init__(self, intcode: List[int]):
+    def __init__(self, intcode: List[int], input_values: List[int] or int = None):
         self.intcode = intcode
         self.position = 0
         self.running = False
-        self.input = None
+        self.input = []
+        if type(input_values) is int:
+            self.input.append(input_values)
+        elif type(input_values) is list:
+            self.input.extend(input_values)
         self.log = []
         self.modes = [0, 0, 0]
         self.opcodes = {1: [self.addition, 3],  # opcode for each method and how many parameters it takes
@@ -30,8 +34,8 @@ class TEST:
         self.intcode[self.intcode[self.position + 3]] = self.getValue(1) * self.getValue(2)
 
     def get_input_value(self):
-        if self.input is not None:
-            return self.input
+        if self.input:
+            return self.input.pop(0)
         else:
             return int(input('Input value to the TEST: '))
 
@@ -78,14 +82,12 @@ def main(day):
     data = aocinput(day)
     data = [int(value) for value in data[0].split(',')]
 
-    test = TEST(data.copy())
-    test.input = 1
+    test = TEST(data.copy(), 1)
     test.run()
     print(test.log[-1])
 
     # part 2
-    test = TEST(data.copy())
-    test.input = 5
+    test = TEST(data.copy(), 5)
     test.run()
     print(test.log[-1])
 
