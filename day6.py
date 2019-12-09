@@ -1,17 +1,18 @@
+from __future__ import annotations
 from inputreader import aocinput
 from typing import List, Tuple
 
 
 class Planet:
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
         self.children = set()
         self.parent = None
 
-    def add_child(self, child):
+    def add_child(self, child: Planet):
         self.children.add(child)
 
-    def set_parent(self, parent):
+    def set_parent(self, parent: Planet):
         self.parent = parent
 
     def __repr__(self) -> str:
@@ -36,7 +37,7 @@ def find_orbits(data: List[str]) -> Tuple[int, int]:
         childPlanet.set_parent(parentPlanet)
 
     # Part 1
-    current: List[Planet] = [getplanet('COM')]
+    current = [getplanet('COM')]
     orbits = 0
     step = 1
     while current:
