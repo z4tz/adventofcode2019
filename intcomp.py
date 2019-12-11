@@ -4,7 +4,7 @@ from collections import defaultdict
 
 class Intcomp:
     def __init__(self, intcode: List[int], input_values: List[int] or int = None):
-        self._intcode = defaultdict(int)
+        self._intcode = defaultdict(int)  # default dict to facilitate expanding memory, todo: block negative memory?
         self._intcode.update(zip(range(len(intcode)), intcode))
         self._position = 0
         self._input = []
@@ -29,7 +29,12 @@ class Intcomp:
                          99: [self._stop, 0]}
         self.running = False
 
-    def _get_position(self, parameter):
+    # helper functions
+
+    def _get_position(self, parameter) -> int:
+        """
+        Returns the resulting position for the given parameter, adjusted for parameter mode
+        """
         mode = self._modes[parameter - 1]
         if mode == 2:
             return self._base + self._intcode[self._position + parameter]
@@ -38,18 +43,32 @@ class Intcomp:
         elif mode == 0:
             return self._intcode[self._position + parameter]
         else:
-            raise ValueError('Mode out of range, must be 0,1 or 2')
+            raise ValueError(f'Mode out of range, must be 0,1 or 2. Current modes:{self._modes}')
 
-    def _get_value(self, parameter, output=False):
+    def _get_value(self, parameter: int) -> int:
+        """
+        Returns stored value at position that the given parameter points to
+        """
         return self._intcode[self._get_position(parameter)]
 
+    # instruction functions
+
     def _addition(self):
+        """
+        Add param 1 and 2 and store to param 3 position
+        """
         self._intcode[self._get_position(3)] = self._get_value(1) + self._get_value(2)
 
     def _multiplication(self):
+        """
+        Multiply param 1 and 2 and store to param 3 position
+        """
         self._intcode[self._get_position(3)] = self._get_value(1) * self._get_value(2)
 
     def _insert(self):
+        """
+        Insert value next in line at param 1 position
+        """
         if self._input:
             value = self._input.pop(0)
         else:
@@ -57,6 +76,9 @@ class Intcomp:
         self._intcode[self._get_position(1)] = value
 
     def _output(self):
+        """
+        Log value at param 1 position
+        """
         value = self._get_value(1)
         self._full_log.append(value)
         self._log.append(value)
@@ -83,7 +105,7 @@ class Intcomp:
     def _stop(self):
         self.running = False
 
-    # end if instructions
+    # public functions, interaction with Intcomp from outside
 
     def add_input(self, value: int):
         self._input.append(value)
@@ -92,20 +114,21 @@ class Intcomp:
         """
         Step one instruction at a time
         """
-        opcode = f"{self._intcode[self._position]:05d}"  # get leading zeros visible
+        opstring = f"{self._intcode[self._position]:05d}"  # get leading zeros visible
         try:
-            instruction = self._opcodes[int(opcode[-2:])][0]
-            self._modes = [int(i) for i in reversed(opcode[:3])]
+            opcode = self._opcodes[int(opstring[-2:])]
+            instruction = opcode[0]
+            self._modes = [int(i) for i in reversed(opstring[:3])]
             instruction()
-            self._position += self._opcodes[int(opcode[-2:])][1] + 1
+            self._position += opcode[1] + 1
             self._previous_instruction = instruction
         except KeyError:
-            print('Error, invalid opcode: ', opcode)
+            print('Error, invalid opcode: ', opstring)
             exit()
 
     def run(self):
         """
-        Run continuous until _stop instruction is reached
+        Run continuous until stop instruction is reached
         """
         self.running = True
         while self.running:
@@ -133,7 +156,7 @@ class Intcomp:
             else:
                 return None
 
-    def full_output(self):
+    def full_output(self) -> List[int]:
         """
         returns the full log for the program
         """
