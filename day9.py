@@ -2,6 +2,7 @@ from inputreader import aocinput
 from day5 import TEST
 from typing import List
 from collections import defaultdict
+from intcomp import Intcomp
 
 
 class BOOST(TEST):
@@ -50,17 +51,15 @@ class BOOST(TEST):
 
 
 def find_keycode(intcode: List[int])->int:
-    boost = BOOST(intcode, [1])
-    boost.run()
-
-    return boost.log[-1]
+    intcomp = Intcomp(intcode, [1])
+    intcomp.run()
+    return intcomp.next_output()
 
 
 def get_coordinates(intcode: List[int])->int:
-    boost = BOOST(intcode, [2])
-    boost.run()
-
-    return boost.log[-1]
+    intcomp = Intcomp(intcode, [2])
+    intcomp.run()
+    return intcomp.next_output()
 
 
 def main(day):

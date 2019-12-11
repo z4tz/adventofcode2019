@@ -9,7 +9,7 @@ class AMPTEST(TEST):
         super().__init__(intcode, input_values)
         self.done = False
 
-    def output(self):  # pauses the program on output
+    def output(self):  # pauses the program on _output
         super().output()
         self.running = False
 
@@ -34,7 +34,7 @@ def maximize_thrusters(data: List[int]) -> Tuple[int, int]:
 
 def run_TESTs(data: List[int], settings) -> int:
     tests = [TEST(data.copy(), setting) for setting in settings]
-    output = 0  # input signal for first TEST
+    output = 0  # _input signal for first TEST
     for test in tests:
         test.input.append(output)
         test.run()
@@ -44,10 +44,10 @@ def run_TESTs(data: List[int], settings) -> int:
 
 def run_amplified_TESTs(data: List[int], settings) -> int:
     tests = [AMPTEST(data.copy(), setting) for setting in settings]
-    output = 0  # input signal for first TEST
+    output = 0  # _input signal for first TEST
     while True:
         for i, test in enumerate(tests):
-            # each TEST is run until an output, that output is appended on the next and then run until output...
+            # each TEST is run until an _output, that _output is appended on the next and then run until _output...
             test.input.append(output)
             test.run()
             if test.done:

@@ -12,14 +12,14 @@ from collections import Counter
 #         yield from recursive_range(number, factor-1, total+number*10**factor,)
 #
 #
-# def numbergen2(start: str, stop: str) ->Iterator[int]:
+# def numbergen2(start: str, _stop: str) ->Iterator[int]:
 #     """
-#     Generates all numbers from start to stop where the next digit in the number always is the same or higher.
+#     Generates all numbers from start to _stop where the next digit in the number always is the same or higher.
 #     Alternative version using recursion instead of nested loops
-#     Must always be same number of digits in start and stop
+#     Must always be same number of digits in start and _stop
 #     """
 #     startnr = int(start)
-#     stopnr = int(stop)
+#     stopnr = int(_stop)
 #     for number in recursive_range(int(start[0]), factor=len(start)-1):
 #         if startnr <= number <= stopnr:
 #             yield number
@@ -27,7 +27,7 @@ from collections import Counter
 
 def numbergen(start: str, stop: str) ->Iterator[int]:
     """
-    Generates all numbers from start to stop where the next digit in the number always is the same or higher.
+    Generates all numbers from start to _stop where the next digit in the number always is the same or higher.
     Fixed length of 6 numbers.
     """
     startnr = int(start)

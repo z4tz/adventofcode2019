@@ -1,7 +1,7 @@
 from __future__ import annotations
 from inputreader import aocinput
-from typing import List, Tuple, Dict
-from math import gcd, sin, pi, asin
+from typing import List, Tuple
+from math import gcd, pi, asin
 
 
 class Asteroid:
