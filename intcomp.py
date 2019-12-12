@@ -17,17 +17,18 @@ class Intcomp:
         self._modes = [0, 0, 0]
         self._base = 0
         self._previous_instruction = None
-        self._opcodes = {1: [self._addition, 3],  # opcode for each method and how many parameters it takes
-                         2: [self._multiplication, 3],
-                         3: [self._insert, 1],
-                         4: [self._output, 1],
-                         5: [self._jump_if_true, 2],
-                         6: [self._jump_if_false, 2],
-                         7: [self._less_than, 3],
-                         8: [self._equals, 3],
-                         9: [self._adjust_base, 1],
-                         99: [self._stop, 0]}
+        self._opcodes = {1: [self._addition, 4],  # opcode for each method and how many parameters it takes
+                         2: [self._multiplication, 4],
+                         3: [self._insert, 2],
+                         4: [self._output, 2],
+                         5: [self._jump_if_true, 3],
+                         6: [self._jump_if_false, 3],
+                         7: [self._less_than, 4],
+                         8: [self._equals, 4],
+                         9: [self._adjust_base, 2],
+                         99: [self._stop, 1]}
         self.running = False
+        self.done = False
 
     # helper functions
 
@@ -103,6 +104,7 @@ class Intcomp:
         self._base += self._get_value(1)
 
     def _stop(self):
+        self.done = True
         self.running = False
 
     # public functions, interaction with Intcomp from outside
@@ -114,16 +116,16 @@ class Intcomp:
         """
         Step one instruction at a time
         """
-        opstring = f"{self._intcode[self._position]:05d}"  # get leading zeros visible
         try:
-            opcode = self._opcodes[int(opstring[-2:])]
+            op = self._intcode[self._position]
+            opcode = self._opcodes[op % 100]
             instruction = opcode[0]
-            self._modes = [int(i) for i in reversed(opstring[:3])]
+            self._modes = [op // 100 % 10, op // 1000 % 10, op // 10000]  # get first three numbers of instruction
             instruction()
-            self._position += opcode[1] + 1
+            self._position += opcode[1]
             self._previous_instruction = instruction
         except KeyError:
-            print('Error, invalid opcode: ', opstring)
+            print('Error, invalid opcode: ', op)
             exit()
 
     def run(self):
@@ -139,6 +141,7 @@ class Intcomp:
         Run until a specific instruction is reached, or program ends
         """
         self.running = True
+        self.step()  # make sure it moves at least one step ahead
         while self.running and self._previous_instruction != instruction:
             self.step()
         self.running = False
