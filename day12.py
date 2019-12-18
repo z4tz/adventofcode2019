@@ -1,78 +1,64 @@
 from inputreader import aocinput
 from typing import Tuple, List
 import re
-import numpy as np
-from matplotlib import pyplot as plt
 from math import gcd
 
 
 class Moon:
     def __init__(self, x: int, y: int, z: int):
-        self._position = np.array([x, y, z], dtype=int)
-        self._velocity = np.zeros(3, dtype=int)
-        self._initial_position = self._position.copy()
-        self._periodicity = [0, 0, 0]
+        self.position = [int(x), int(y), int(z)]
+        self.velocity = [0, 0, 0]
+        self.initial_position = self.position.copy()
 
     def move(self):
-        self._position += self._velocity
-
-    def gravity(self, gravity):
-        self._velocity += gravity
+        for i in range(3):
+            self.position[i] += self.velocity[i]
 
     def __repr__(self):
-        return '(' + ', '.join(self.position) + ')'
-
-    @property
-    def position(self) -> np.array:
-        return self._position
+        return '(' + ', '.join(str(pos) for pos in self.position) + ')'
 
     @property
     def total_energy(self):
-        return abs(self._position).sum() * abs(self._velocity).sum()
-
-    def check_periodicity(self, steps: int):
-        for i in range(3):
-            if not self._periodicity[i] and self._position[i] == self._initial_position[i] and self._velocity[i] == 0:
-                self._periodicity[i] = steps
-
-    def periods_found(self):
-        return self._periodicity.count(0) == 0
+        return sum((map(abs, self.position))) * sum(map(abs, self.velocity))
 
 
-def total_energy(data: List[str], steps: int =7000, debug: bool = False) -> Tuple[int, int]:
+def total_energy(data: List[str], steps: int =1000, debug: bool = False) -> Tuple[int, int]:
     moons = [Moon(*re.match('<x=([-\d]*), y=([-\d]*), z=([-\d]*)>', line).groups()) for line in data]
-    print(moons[1]._position)
-    for i in range(steps):
+    periodicity = [0, 0, 0]
+    i = 0
+    energy = 0
+    while 0 in periodicity or i < steps:
         step(moons)
-        for moon in moons:
-            if not moon.periods_found():
-                moon.check_periodicity(i+1)
         for d in range(3):
-            if back_to_start(moons, d):
-                print(i, 'hello')
+            if back_to_start(moons, d) and not periodicity[d]:
+                periodicity[d] = i + 1
         if debug:
             print('------', i+1, '----------')
             for moon in moons:
-                print(moon.position, moon._velocity, moon.total_energy)
-    periods = []
-    for i in range(3):
-        periods.append(least_common_multiple([moon._periodicity[i] for moon in moons]))
-    print(least_common_multiple(periods))
-
-    return sum(moon.total_energy for moon in moons)
+                print(moon.position, moon.velocity, moon.total_energy)
+        if i == steps-1:
+            energy = sum(moon.total_energy for moon in moons)
+        i += 1
+    return energy, least_common_multiple(periodicity)
 
 
 def back_to_start(moons, i):
-    return sum([moon._position[i] == moon._initial_position[i] and moon._velocity == 0 for moon in moons]) == 4
-
+    for moon in moons:
+        if moon.velocity[i] or moon.position[i] != moon.initial_position[i]:
+            return False
+    return True
 
 
 def step(moons):
     for i, moon in enumerate(moons[:-1]):
         for other in moons[i + 1:]:
-            gravity = np.array([-1 if pos1 > pos2 else 1 if pos1 < pos2 else 0 for pos1, pos2 in zip(moon.position, other.position)])
-            moon.gravity(gravity)
-            other.gravity(-gravity)  # negative sign flips all values in array
+            for d in range(3):
+                if moon.position[d] > other.position[d]:
+                    moon.velocity[d] -= 1
+                    other.velocity[d] += 1
+                elif moon.position[d] < other.position[d]:
+                    moon.velocity[d] += 1
+                    other.velocity[d] -= 1
     for moon in moons:
         moon.move()
 
