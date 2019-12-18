@@ -136,10 +136,13 @@ class Intcomp:
         while self.running:
             self.step()
 
-    def run_until(self, instruction: Callable):
+    def run_until(self, instruction: Callable or int):
         """
         Run until a specific instruction is reached, or program ends
         """
+        if type(instruction) == int:
+            instruction = self._opcodes[instruction][0]
+
         self.running = True
         self.step()  # make sure it moves at least one step ahead
         while self.running and self._previous_instruction != instruction:
