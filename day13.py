@@ -102,8 +102,9 @@ def predict_ball(ball: Ball) -> int:
             return prediction
 
 
-def play(data: List[int]):
-    images = []
+def play(data: List[int], animation):
+    if animation:
+        images = []
     fig = plt.figure()
     comp = Arcade(data)
     tiles = defaultdict(int)
@@ -127,8 +128,8 @@ def play(data: List[int]):
                 tiles[complex(log[i * 3], log[i * 3 + 1])] = log[i * 3 + 2]
         prediction = predict_ball(ball)
         remaining = Counter(tiles.values())[2]
-        #if remaining < 80:
-        images.append([draw_screen(tiles)])
+        if animation:
+            images.append([draw_screen(tiles)])
 
         if not prediction:
             prediction = paddle_x
@@ -146,22 +147,22 @@ def play(data: List[int]):
             expected_paddle -= 1
         else:
             comp.add_input(0)
-    print(remaining)
-    ani = ArtistAnimation(fig, images, interval=100)
-    plt.show()
+    if animation:
+        ani = ArtistAnimation(fig, images, interval=100)
+        plt.show()
     return score
 
 
-def care_package(data: List[int]) -> Tuple[int, int]:
+def care_package(data: List[int], animation: bool) -> Tuple[int, int]:
     tiles = get_tiles(data.copy())
-    score = play(data.copy())
+    score = play(data.copy(), animation)
     return Counter(tiles.values())[2], score
 
 
-def main(day):
+def main(day, animation=False):
     data = aocinput(day)
     data = [int(part) for part in data[0].strip().split(',')]
-    result = care_package(data)
+    result = care_package(data, animation)
     print(result)
 
 
