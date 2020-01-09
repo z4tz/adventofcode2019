@@ -35,7 +35,6 @@ def findIntersections(data: List[int]):
             x = 0
         else:
             x += 1
-    print(robot)
     return sum(x * y for x, y in intersections)
 
 
